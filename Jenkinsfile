@@ -14,14 +14,14 @@ pipeline {
         
         stage('2. Quality Verification') {
             steps {
-                // Invoking runTests.groovy dynamically from the shared repo warehouse
+                // Invoking Tool B (runTests.groovy) dynamically from the shared repo warehouse
                 runTests junit: 'test-results/unit-tests.xml'
             }
         }
         
         stage('3. Compile Container Image') {
             steps {
-                // Invoking dockerBuild.groovy natively from the library assets
+                // Invoking Tool A (dockerBuild.groovy) natively from the library assets
                 dockerBuild image: 'fraud-inference-service', tag: "${env.BUILD_NUMBER}"
             }
         }
@@ -29,8 +29,10 @@ pipeline {
     
     post {
         success {
-            // Invoking notify.groovy for automated infrastructure tracking signals
-            notify.success("Pipeline Process Execution Build #${env.BUILD_NUMBER} completed cleanly!")
+            // FIXED: Wrapped object-method call inside a script block
+            script {
+                notify.success("Pipeline Process Execution Build #${env.BUILD_NUMBER} completed cleanly!")
+            }
         }
     }
 }
